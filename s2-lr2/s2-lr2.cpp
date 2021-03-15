@@ -62,9 +62,12 @@ public:
 	Clinic& operator= (const Clinic &CL)
 	{
 		std::cout << "Clinic::Оператор присваивания" << std::endl;
+		delete[] fio;
+		fio = new char[strlen(CL.fio) + 1];
+		strcpy(fio, CL.fio);
 		specialty = CL.specialty;
 		qualification = CL.qualification;
-		strcpy(fio, CL.fio);
+		
 		return *this;
 	}
 
@@ -125,7 +128,7 @@ int main()
 		}
 	} while (choice != 0);
 
-
+	return 0;
 } //main
 
 
@@ -194,9 +197,9 @@ Clinic* Clinic::addNewRecord(Clinic* P) //выделение памяти под новую структу и з
 
 void showRecordHeader(const char* title) //вспомогательная функция - печать заголовка таблицы
 {
-	std::cout << std::endl << "===================================================================" << std::endl;
+	std::cout << std::endl << "===============================================================================================" << std::endl;
 	std::cout << title;
-	std::cout << std::endl << "===================================================================" << std::endl;
+	std::cout << std::endl << "===============================================================================================" << std::endl;
 	std::cout.setf(std::ios::left);
 	std::cout.width(6);
 	std::cout << " №";
@@ -209,7 +212,7 @@ void showRecordHeader(const char* title) //вспомогательная функция - печать заго
 	std::cout.setf(std::ios::left);
 	std::cout.width(16);
 	std::cout << "Квалификация";
-	std::cout << std::endl << "===================================================================" << std::endl;
+	std::cout << std::endl << "===============================================================================================" << std::endl;
 }
 
 void showOneRecord(Clinic Record, int number = 1) //вспомогательная функция - печать одной записи
@@ -237,7 +240,7 @@ void showAllRecords(Clinic* P) //показывает все записи в памяти
 	for (int i = 0; i < P->get_count(); ++i) {
 		showOneRecord(P[i], i + 1);
 	} 
-	std::cout << "===================================================================" << std::endl;
+	std::cout << "===============================================================================================" << std::endl;
 }// showAllRecords()
 
 int menu() //Меню функций базы
