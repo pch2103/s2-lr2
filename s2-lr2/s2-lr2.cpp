@@ -21,7 +21,7 @@
 #pragma warning (disable : 4996) //Без этого ругается на fopen и strcpy https://stackoverflow.com/questions/14386/fopen-deprecated-warning
 
 #define FIO_WITH 60
-#define BASE_NAME "clinicBase.txt"
+#define BASE_NAME "clinicBase1.txt"
 
 class Clinic {
 	char* fio;
@@ -74,9 +74,10 @@ public:
 	void friend showOneRecord(Clinic, int);
 
 	//МК - методы класса ===============================================
-
+	Clinic* loadRecords();
 	void enterNewRecord(); //ввод новой записи в единичную структуру потом она будет записана в addNewRecord()
 	Clinic* addNewRecord(Clinic*); //выделение памяти под новую структу и заполнение ее данными
+	void exitAndSave(); // запись базы из памяти на диск при выходе
 
 	void show() //для тестирования, показывает поля
 	{ 
@@ -104,6 +105,8 @@ int main()
 	Clinic* myClynic = nullptr;
 	Clinic tmpClynic;
 
+	myClynic = myClynic->loadRecords();
+
 	do {
 		choice = menu();
 
@@ -128,9 +131,61 @@ int main()
 		}
 	} while (choice != 0);
 
+	myClynic->exitAndSave(); // запись базы из памяти на диск при выходе
+
 	return 0;
 } //main
 
+
+//FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+// РЕАЛИЗАЦИЯ МЕТОДОВ
+//FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+
+Clinic* Clinic::loadRecords() //загрузка данных из файла и вывод их на экран и загрузка в пямять для работы
+{
+	int specialty, qualification;
+
+	char* fio;
+	fio = new char[FIO_WITH];
+
+	Clinic T;
+	Clinic* PT = nullptr;
+
+	FILE* FP = fopen(BASE_NAME, "r");
+
+	if (FP != NULL) {
+		std::cout << std::endl << "+++++++++++++++++++++++++++++++++++++" << std::endl;
+		std::cout << "Загрузка текущей базы:" << std::endl;
+		while (fscanf(FP, "%99[^\n]%d\n%d\n", fio, &specialty, &qualification) != EOF) 
+		{ 
+			std::cout << fio << " " << specialty << " " << qualification << std::endl;
+			T = Clinic(fio, specialty, qualification);
+			PT = T.addNewRecord(PT);
+		}
+		std::cout << std::endl << "+++++++++++++++++++++++++++++++++++++" << std::endl;
+		fclose(FP);
+
+		return PT;
+	}
+
+	return nullptr;
+} //loadRecords()
+
+void Clinic::exitAndSave() // запись базы из памяти на диск при выходе
+{
+	int amount = this->get_count();
+
+	FILE* FP = fopen(BASE_NAME, "w");
+
+	for (int i = 0; i < amount; ++i) {
+		fprintf(FP, "%s\n%d\n%d\n", (this+i)->fio, (this + i)->specialty, (this + i)->qualification);
+	}
+
+	if (FP != NULL)
+	{
+		fclose(FP);
+	}
+} //exitAndSave()
 
 void Clinic::enterNewRecord() //ввод новой записи в единичную структуру потом она будет записана в addNewRecord()
 {
@@ -184,7 +239,7 @@ Clinic* Clinic::addNewRecord(Clinic* P) //выделение памяти под новую структу и з
 				P[i].~Clinic(); // Удаляем ранние записи из памяти (delete[] P; - не работает) вызываем деструктор явно для каждой записи
 			}
 
-			T[amount] = Clinic(this->fio, this->specialty, this->qualification); //Добавляем новую запись
+			T[amount] = Clinic(this->fio, this->specialty, this->qualification); //Добавляем новую запись в память
 			//delete[] P; - не работает см. выше
 			P = T; //временный объект становится "присланным"
 		}
