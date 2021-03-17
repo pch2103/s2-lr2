@@ -83,6 +83,7 @@ public:
 	void exitAndSave(); // запись базы из памяти на диск при выходе
 	void qualificationFilter();  //Фильтрует вывод по квалификации
 	void specialtyFilter();  //Фильтрует вывод по квалификации
+	void sortRecordsByAlpha(); //Сортировка в алфавитном порядке
 
 	void show() //для тестирования, показывает поля
 	{ 
@@ -134,6 +135,7 @@ int main()
 			myClynic->specialtyFilter();  //Фильтрует вывод по специальности
 			break;
 		case 6: //6 - Сортировка в алфавитном порядке
+			myClynic->sortRecordsByAlpha();
 			break;
 		default:
 			break;
@@ -257,6 +259,25 @@ Clinic* Clinic::addNewRecord(Clinic* P) //выделение памяти под новую структу и з
 
 		return P;
 } // addNewRecord()
+
+void Clinic::sortRecordsByAlpha() //Сортировка базы (в памяти) в алфавитном порядке
+{
+	int i, j, amount = this->get_count();
+
+	Clinic T;
+
+	for (i = 0; i < amount; ++i) {
+		for (j = i + 1; j < amount; ++j) {
+			if (strcmp(this[i].fio, this[j].fio) > 0) {
+				T = this[i];
+				this[i] = this[j];
+				this[j] = T;
+			}
+		} //for j
+	} //for i
+
+	showAllRecords(this);
+} //sortRecordsByAlpha()
 
 void fioSearch(Clinic* CL)  //Поиск по ФИО (ДФ)
 {
